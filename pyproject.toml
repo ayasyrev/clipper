@@ -1,0 +1,17 @@
+[project]
+name = "clipper"
+version = "0.1.0"
+description = "Clipboard tools"
+readme = "README.md"
+authors = [
+    { name = "ayasyrev", email = "a.yasyrev@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+clipper = "clipper:main"
+
+[build-system]
+requires = ["uv_build>=0.8.8,<0.9.0"]
+build-backend = "uv_build"
