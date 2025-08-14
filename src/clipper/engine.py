@@ -78,3 +78,50 @@ class ProcessingEngine:
     def get_available_processors(self) -> List[str]:
         """Get names of all available processors."""
         return [processor.name for processor in self.processors]
+
+    def dry_run(self) -> bool:
+        """
+        Show clipboard content and proposed changes without modifying clipboard.
+
+        Returns:
+            True if dry run was successful, False otherwise.
+        """
+        try:
+            # Get text from clipboard
+            text = get_clipboard_text()
+
+            print("=== CLIPBOARD CONTENT ===")
+            if not text.strip():
+                print("(empty or whitespace only)")
+                return True
+            else:
+                print(text)
+
+            print("\n=== PROPOSAL ===")
+
+            # Find a processor that can handle the text
+            processor = self._find_processor(text)
+
+            if not processor:
+                print("No processor available for this text.")
+                return True
+
+            # Process the text to get proposed changes
+            processed_text = processor.process(text)
+
+            # Check if text would be changed
+            if processed_text == text:
+                print("No changes needed.")
+            else:
+                print(f"Processor: {processor.name}")
+                print("Proposed changes:")
+                print(processed_text)
+
+            return True
+
+        except ClipboardError as e:
+            print(f"Clipboard error: {e}", file=sys.stderr)
+            return False
+        except Exception as e:
+            print(f"Processing error: {e}", file=sys.stderr)
+            return False

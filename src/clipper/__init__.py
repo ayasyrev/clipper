@@ -16,8 +16,14 @@ def main() -> None:
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enable verbose output"
     )
+    parser.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        help="Show clipboard content and proposed changes without modifying clipboard",
+    )
 
-    parser.parse_args()  # Parse arguments but don't need to use them yet
+    args = parser.parse_args()
 
     # Check clipboard availability
     if not is_clipboard_available():
@@ -26,7 +32,10 @@ def main() -> None:
 
     # Process clipboard
     engine = ProcessingEngine()
-    success = engine.process_clipboard()
+    if args.dry_run:
+        success = engine.dry_run()
+    else:
+        success = engine.process_clipboard()
 
     if not success:
         sys.exit(1)
