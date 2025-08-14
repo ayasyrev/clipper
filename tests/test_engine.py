@@ -114,6 +114,7 @@ class TestProcessingEngine:
         mock_processor = MockProcessor(can_process_return=False)
 
         # Replace default processors with our mock that can't process
+        # The engine will then use its default LayoutConverter
         self.engine.processors = [mock_processor]
 
         captured_stderr = StringIO()
@@ -121,9 +122,10 @@ class TestProcessingEngine:
         with patch("sys.stderr", captured_stderr):
             result = self.engine.process_clipboard()
 
-        assert result is False
+        # The engine falls back to the default processor, which finds no changes.
+        assert result is True
         stderr_content = captured_stderr.getvalue()
-        assert "No processor available" in stderr_content
+        assert "no need to convert" in stderr_content
 
     @patch("clipper.engine.get_clipboard_text")
     @patch("clipper.engine.set_clipboard_text")
