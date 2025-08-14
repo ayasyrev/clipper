@@ -28,6 +28,12 @@ def main() -> None:
         action="store_true",
         help="Ask for confirmation before converting text",
     )
+    parser.add_argument(
+        "-u",
+        "--undo",
+        action="store_true",
+        help="Restore previous clipboard content",
+    )
 
     args = parser.parse_args()
 
@@ -40,6 +46,8 @@ def main() -> None:
     engine = ProcessingEngine()
     if args.dry_run:
         success = engine.dry_run()
+    elif args.undo:
+        success = engine.undo()
     elif args.interactive:
         success = engine.process_clipboard_interactive()
     else:
