@@ -92,6 +92,71 @@ class ProcessingEngine:
         """Get names of all available processors."""
         return [processor.name for processor in self.processors]
 
+    def process_clipboard_interactive(self) -> bool:
+        """
+        Process clipboard content with user confirmation.
+
+        Returns:
+            True if processing was successful, False otherwise.
+        """
+        try:
+            # Get text from clipboard
+            text = get_clipboard_text()
+
+            if not text.strip():
+                print(
+                    "Clipboard is empty or contains only whitespace.", file=sys.stderr
+                )
+                return False
+
+            # Find a processor that can handle the text
+            processor = self._find_processor(text)
+
+            # If no specific processor is found, use Layout Converter as default
+            if not processor:
+                processor = self._get_default_processor()
+
+            # Process the text
+            processed_text = processor.process(text)
+
+            # Check if text was actually changed
+            if processed_text == text:
+                text_preview = self._truncate_text(text)
+                print(f'no need to convert: "{text_preview}"', file=sys.stderr)
+                return True
+
+            # Show preview and ask for confirmation
+            original_preview = self._truncate_text(text)
+            processed_preview = self._truncate_text(processed_text)
+            print(
+                f'Proposed conversion: "{original_preview}" --> "{processed_preview}"'
+            )
+
+            try:
+                response = input("Proceed with conversion? [y/N]: ").strip().lower()
+                if response not in ("y", "yes"):
+                    print("Conversion cancelled.", file=sys.stderr)
+                    return True
+            except (EOFError, KeyboardInterrupt):
+                print("\nConversion cancelled.", file=sys.stderr)
+                return True
+
+            # Set processed text back to clipboard
+            set_clipboard_text(processed_text)
+
+            # Show success message
+            print(
+                f'done: "{original_preview}" --> "{processed_preview}"', file=sys.stderr
+            )
+            return True
+
+        except ClipboardError as e:
+            print(f"Clipboard error: {e}", file=sys.stderr)
+            return False
+        except Exception as e:
+            print(f"Processing error: {e}", file=sys.stderr)
+            return False
+
     def dry_run(self) -> bool:
         """
         Show clipboard content and proposed changes without modifying clipboard.

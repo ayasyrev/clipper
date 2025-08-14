@@ -22,6 +22,12 @@ def main() -> None:
         action="store_true",
         help="Show clipboard content and proposed changes without modifying clipboard",
     )
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        help="Ask for confirmation before converting text",
+    )
 
     args = parser.parse_args()
 
@@ -34,6 +40,8 @@ def main() -> None:
     engine = ProcessingEngine()
     if args.dry_run:
         success = engine.dry_run()
+    elif args.interactive:
+        success = engine.process_clipboard_interactive()
     else:
         success = engine.process_clipboard()
 
