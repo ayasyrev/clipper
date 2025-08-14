@@ -102,7 +102,7 @@ RU_TO_EN_MAPPING = {
     "+": "+",
     "\\": "\\",
     "|": "|",
-    '"№;': "#",  # № symbol maps to #
+    "№": "#",  # № symbol maps to #
 }
 
 # Create reverse mapping (English to Russian)
