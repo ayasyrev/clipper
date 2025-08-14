@@ -14,6 +14,10 @@ class ProcessingEngine:
         self.processors: List[BaseProcessor] = []
         self._register_default_processors()
 
+    def _truncate_text(self, text: str, max_chars: int = 10) -> str:
+        """Truncate text to specified number of characters for preview."""
+        return text[:max_chars] if len(text) > max_chars else text
+
     def _register_default_processors(self) -> None:
         """Register default processors."""
         self.processors.append(LayoutConverter())
@@ -52,8 +56,12 @@ class ProcessingEngine:
 
             # Set processed text back to clipboard
             set_clipboard_text(processed_text)
+
+            # Show concise success message with text preview
+            original_preview = self._truncate_text(text)
+            processed_preview = self._truncate_text(processed_text)
             print(
-                f"Text processed successfully with {processor.name}.", file=sys.stderr
+                f'done: "{original_preview}" --> "{processed_preview}"', file=sys.stderr
             )
             return True
 
