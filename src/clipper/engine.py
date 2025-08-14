@@ -14,7 +14,9 @@ class ProcessingEngine:
     def __init__(self) -> None:
         self.processors: List[BaseProcessor] = []
         self._register_default_processors()
-        self._undo_file = Path.home() / ".clipper_undo"
+        app_dir = Path.home() / ".clipper"
+        app_dir.mkdir(exist_ok=True)
+        self._undo_file = app_dir / "undo_state"
 
     def _truncate_text(self, text: str, max_chars: int = 10) -> str:
         """Truncate text to specified number of characters for preview."""
