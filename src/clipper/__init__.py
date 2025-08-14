@@ -1,2 +1,45 @@
+"""Clipper - Simple clipboard text processing tool."""
+
+import sys
+import argparse
+from .engine import ProcessingEngine
+from .clipboard import is_clipboard_available
+
+
 def main() -> None:
-    print("Hello from clipper!")
+    """Main entry point for the clipper CLI."""
+    parser = argparse.ArgumentParser(
+        description="Process clipboard text (fix keyboard layout issues)",
+        prog="clipper",
+    )
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Enable verbose output"
+    )
+    parser.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        help="Show clipboard content and proposed changes without modifying clipboard",
+    )
+
+    args = parser.parse_args()
+
+    # Check clipboard availability
+    if not is_clipboard_available():
+        print("Error: Clipboard is not available or accessible.", file=sys.stderr)
+        sys.exit(1)
+
+    # Process clipboard
+    engine = ProcessingEngine()
+    if args.dry_run:
+        success = engine.dry_run()
+    else:
+        success = engine.process_clipboard()
+
+    if not success:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -7,7 +7,9 @@ authors = [
     { name = "ayasyrev", email = "a.yasyrev@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pyperclip>=1.8.2",
+]
 
 [project.scripts]
 clipper = "clipper:main"
