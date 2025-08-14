@@ -42,16 +42,17 @@ class ProcessingEngine:
             # Find a processor that can handle the text
             processor = self._find_processor(text)
 
+            # If no specific processor is found, use Layout Converter as default
             if not processor:
-                print("No processor available for this text.", file=sys.stderr)
-                return False
+                processor = self._get_default_processor()
 
             # Process the text
             processed_text = processor.process(text)
 
             # Check if text was actually changed
             if processed_text == text:
-                print("Text analysis completed. No changes needed.", file=sys.stderr)
+                text_preview = self._truncate_text(text)
+                print(f'no need to convert: "{text_preview}"', file=sys.stderr)
                 return True
 
             # Set processed text back to clipboard
@@ -78,6 +79,10 @@ class ProcessingEngine:
             if processor.can_process(text):
                 return processor
         return None
+
+    def _get_default_processor(self) -> BaseProcessor:
+        """Get the default processor (Layout Converter) for fallback processing."""
+        return LayoutConverter()
 
     def register_processor(self, processor: BaseProcessor) -> None:
         """Register a new processor."""
