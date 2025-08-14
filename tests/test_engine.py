@@ -75,7 +75,8 @@ class TestProcessingEngine:
         mock_set_clipboard.assert_called_once_with("test output")
 
         stderr_content = captured_stderr.getvalue()
-        assert "successfully" in stderr_content
+        assert "test input" in stderr_content
+        assert "test outpu" in stderr_content
 
     @patch("clipper.engine.get_clipboard_text")
     def test_process_clipboard_empty_text(self, mock_get_clipboard):
@@ -147,7 +148,7 @@ class TestProcessingEngine:
         mock_set_clipboard.assert_not_called()
 
         stderr_content = captured_stderr.getvalue()
-        assert "No changes needed" in stderr_content
+        assert "no need to convert" in stderr_content
 
     @patch("clipper.engine.get_clipboard_text")
     def test_process_clipboard_error(self, mock_get_clipboard):
